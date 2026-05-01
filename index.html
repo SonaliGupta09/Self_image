@@ -1,165 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Social Perception Quiz</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: auto;
-      padding: 20px;
-      line-height: 1.6;
-    }
-    .question {
-      margin-bottom: 20px;
-    }
-    .result {
-      margin-top: 30px;
-      padding: 20px;
-      border-top: 2px solid #000;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Social Perception Quiz</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  max-width: 700px;
+  margin: auto;
+  padding: 20px;
+  line-height: 1.6;
+}
+.container {
+  display: none;
+}
+.active {
+  display: block;
+}
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+.progress {
+  margin-bottom: 10px;
+  color: gray;
+}
+</style>
 </head>
+
 <body>
 
-<h1>What Do You Think Others Think About You?</h1>
+<!-- INTRO -->
+<div id="intro" class="active">
+  <h1>Your Social Mirror</h1>
+  <p>
+    This quiz doesn’t tell you how people actually see you.  
+    It reveals how you *believe* others see you.
+  </p>
+  <p>
+    Each question describes a real-life situation.  
+    Choose the option that feels closest to your **first natural thought**.
+  </p>
+  <button onclick="startQuiz()">Start</button>
+</div>
 
-<form id="quizForm"></form>
+<!-- QUIZ -->
+<div id="quiz" class="container">
+  <div class="progress" id="progress"></div>
+  <div id="question"></div>
+  <div id="options"></div>
+  <button onclick="nextQuestion()">Next</button>
+</div>
 
-<button onclick="calculateResult()">Submit</button>
-
-<div id="result" class="result"></div>
+<!-- RESULT -->
+<div id="result" class="container"></div>
 
 <script>
 const questions = [
 {
-q: "You’re having a good conversation with someone over text. After your last message, they stop replying—even though they’ve been online for a while.",
-options: ["They’re probably caught up in something","Maybe they’ll reply when they’re free","Did I say something that changed the vibe?","They’ve lost interest in talking to me"]
+q: "You’re having a really good conversation with someone over text. The flow is natural, engaging—and then after your last message, they stop replying. You notice they’ve been online since then.",
+options: [
+"They’re probably caught up in something else right now",
+"Maybe they’ll reply when they’re free",
+"Did I say something that changed the vibe?",
+"They’ve lost interest in talking to me"
+]
 },
 {
-q: "You’re talking to someone and suddenly their energy feels different—shorter replies, less enthusiasm than before.",
-options: ["Their mood probably shifted","Maybe they’re just tired or distracted","Did I do something wrong here?","They’re not enjoying this conversation anymore"]
+q: "You’re talking to someone, and mid-conversation their energy shifts. Their replies become shorter, less expressive, and the warmth feels reduced.",
+options: [
+"Their mood probably shifted for some reason",
+"Maybe they’re just tired or distracted",
+"Did I do something wrong here?",
+"They’re not enjoying this conversation anymore"
+]
 },
 {
-q: "You walk into a room where a group is already deep in conversation. No one acknowledges you immediately.",
-options: ["They’re just in the flow","I’ll join when it feels natural","That felt slightly off","They don’t really want me here"]
+q: "You walk into a room where a group is already deeply engaged in conversation. No one immediately acknowledges your presence.",
+options: [
+"They’re just in the flow of their conversation",
+"I’ll wait and join when it feels natural",
+"That felt slightly off",
+"They don’t really want me here"
+]
 },
 {
-q: "Someone compliments you in front of others.",
-options: ["That’s kind of them","Nice, I appreciate it","Do they actually mean it?","They’re just being polite"]
+q: "Someone compliments you in front of others, and the people around don’t react much.",
+options: [
+"That’s kind of them, I’ll take it",
+"Nice, I appreciate it",
+"Do they actually mean it?",
+"They’re just saying it to be polite"
+]
 },
 {
-q: "People laugh while glancing at you.",
-options: ["Probably unrelated","Could be coincidence","Is it about me?","They’re talking about me"]
+q: "You’re sitting with people and they start laughing, occasionally glancing in your direction.",
+options: [
+"Probably unrelated to me",
+"Could just be coincidence",
+"I wonder if it’s about me",
+"They’re talking about me"
+]
 },
 {
-q: "A friend cancels plans last minute.",
-options: ["It happens","Maybe something came up","Maybe they didn’t feel like meeting","They didn’t want to meet me"]
+q: "A friend cancels plans at the last moment with a short message and no explanation.",
+options: [
+"Things come up, it’s okay",
+"Maybe something urgent happened",
+"Maybe they didn’t feel like meeting",
+"They didn’t really want to meet me"
+]
 },
 {
-q: "You share something personal and get a short response.",
-options: ["People respond differently","Maybe they didn’t know what to say","Maybe I shared too much","They don’t care"]
+q: "You open up about something personal, but the response you receive is brief and the topic shifts quickly.",
+options: [
+"Not everyone knows how to respond",
+"Maybe they didn’t know what to say",
+"Maybe I shared too much",
+"They don’t care about what I said"
+]
 },
 {
-q: "You make a small mistake in public.",
-options: ["Normal","No big deal","People noticed","People judge me now"]
+q: "You make a small but noticeable mistake in front of others.",
+options: [
+"It’s normal, people move on",
+"It happens, no big deal",
+"People probably noticed that",
+"People now see me differently"
+]
 },
 {
-q: "Others made a plan and didn’t include you.",
-options: ["Spontaneous","Situational","Maybe they forgot","They chose not to include me"]
+q: "Later, you find out that others made a plan and you weren’t included.",
+options: [
+"It might have been spontaneous",
+"Could be situational",
+"Maybe they forgot to include me",
+"They chose not to include me"
+]
 },
 {
-q: "Someone reads your message but replies late.",
-options: ["They’ll reply later","Thinking what to say","Feels off","Avoiding me"]
+q: "Someone reads your message but replies much later, even though they were active.",
+options: [
+"They’ll respond when they can",
+"Maybe they were thinking what to say",
+"That feels a bit off",
+"They’re avoiding the conversation"
+]
 },
 {
-q: "You notice a tone change in someone.",
-options: ["Unrelated","Bad day","Did I cause it?","Something is wrong"]
+q: "You notice a subtle shift in how someone talks to you compared to before.",
+options: [
+"Could be unrelated to me",
+"Maybe they’re having a rough day",
+"Did I cause this shift somehow?",
+"Something is wrong between us"
+]
 },
 {
-q: "You’re quiet in a group.",
-options: ["Just listening","That’s okay","People notice","I add no value"]
+q: "In a group setting, you’re quieter than usual and mostly listening.",
+options: [
+"I’m just taking it in",
+"It’s okay to not speak much",
+"People might notice this",
+"They think I don’t add value"
+]
 },
 {
-q: "You greet someone but they don’t respond.",
-options: ["Didn’t notice","Distracted","Felt odd","Ignored me"]
+q: "You greet someone you know, but they don’t respond immediately.",
+options: [
+"They probably didn’t notice",
+"Maybe they’re distracted",
+"That felt a bit uncomfortable",
+"They ignored me"
+]
 },
 {
-q: "Your post gets low engagement.",
-options: ["Normal","Not seen","Not that good","People didn’t like it"]
+q: "You post something you liked online, but it gets very little engagement.",
+options: [
+"Reach varies, it’s normal",
+"Not everyone saw it",
+"Maybe it didn’t land well",
+"People didn’t like it"
+]
 },
 {
-q: "You receive criticism.",
-options: ["Helpful","I’ll reflect","I messed up","They see me negatively"]
+q: "You receive feedback or criticism from someone you respect.",
+options: [
+"This can help me improve",
+"I’ll reflect on it",
+"Maybe I made a mistake",
+"They see me negatively now"
+]
 }
 ];
 
-const form = document.getElementById("quizForm");
+let current = 0;
+let answers = [];
 
-questions.forEach((item, index) => {
-  let div = document.createElement("div");
-  div.classList.add("question");
-  div.innerHTML = `<p><b>${index + 1}. ${item.q}</b></p>`;
+function startQuiz() {
+  document.getElementById("intro").classList.remove("active");
+  document.getElementById("quiz").classList.add("active");
+  showQuestion();
+}
+
+function showQuestion() {
+  const q = questions[current];
+  document.getElementById("progress").innerText = `Question ${current+1} of ${questions.length}`;
+  document.getElementById("question").innerHTML = `<p><b>${q.q}</b></p>`;
   
-  item.options.forEach((opt, i) => {
-    div.innerHTML += `
+  let opts = "";
+  q.options.forEach((opt, i) => {
+    opts += `
       <label>
-        <input type="radio" name="q${index}" value="${i+1}" required />
+        <input type="radio" name="option" value="${i+1}">
         ${opt}
-      </label><br/>
+      </label><br><br>
     `;
   });
+  document.getElementById("options").innerHTML = opts;
+}
 
-  form.appendChild(div);
-});
-
-function calculateResult() {
-  let total = 0;
-  let countC = 0;
-  let countD = 0;
-
-  for (let i = 0; i < questions.length; i++) {
-    let selected = document.querySelector(`input[name="q${i}"]:checked`);
-    if (!selected) return alert("Please answer all questions");
-
-    let val = parseInt(selected.value);
-    total += val;
-
-    if (val === 3) countC++;
-    if (val === 4) countD++;
+function nextQuestion() {
+  let selected = document.querySelector('input[name="option"]:checked');
+  if (!selected) {
+    alert("Please select an option");
+    return;
   }
 
-  let resultText = "";
-  let trait = "";
+  answers.push(parseInt(selected.value));
+  current++;
+
+  if (current < questions.length) {
+    showQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  document.getElementById("quiz").classList.remove("active");
+  document.getElementById("result").classList.add("active");
+
+  let total = answers.reduce((a,b)=>a+b,0);
+  let countC = answers.filter(x=>x===3).length;
+  let countD = answers.filter(x=>x===4).length;
+
+  let resultHTML = "";
 
   if (total <= 25) {
-    resultText = "🌿 The Grounded Observer\n\nYou don’t rush to interpret situations. You stay with reality instead of assumptions.";
-  } 
-  else if (total <= 38) {
-    resultText = "⚖️ The Thoughtful Interpreter\n\nYou notice behavior but don’t fully lose yourself in it.";
-  } 
-  else if (total <= 50) {
-    resultText = "🌊 The Over-Interpreter\n\nYou analyze deeply and often add extra meaning to situations.";
-  } 
-  else {
-    resultText = "🌑 The Inner Critic Projector\n\nYou often feel people are judging you even when nothing is said.";
+    resultHTML = `<h2>🌿 The Grounded Observer</h2>
+    <p>You don’t rush to interpret situations. You let things be before making them about you.</p>`;
+  } else if (total <= 38) {
+    resultHTML = `<h2>⚖️ The Thoughtful Interpreter</h2>
+    <p>You notice behavior but don’t fully lose yourself in it.</p>`;
+  } else if (total <= 50) {
+    resultHTML = `<h2>🌊 The Over-Interpreter</h2>
+    <p>You analyze deeply and often add extra meaning.</p>`;
+  } else {
+    resultHTML = `<h2>🌑 The Inner Critic Projector</h2>
+    <p>You often feel people are judging you even when nothing is said.</p>`;
   }
 
-  // Hidden Traits
   if (countD >= 7) {
-    trait = "\n\n⚡ You tend to jump to conclusions about what others think.";
+    resultHTML += `<p><b>Hidden Trait:</b> You tend to jump to conclusions about what others think.</p>`;
   } else if (countC >= 7) {
-    trait = "\n\n🌫️ You quietly doubt yourself in social situations.";
+    resultHTML += `<p><b>Hidden Trait:</b> You quietly doubt yourself in social situations.</p>`;
   }
 
-  document.getElementById("result").innerText =
-    resultText + trait +
-    "\n\n“This result doesn’t reveal how people see you. It reveals how you believe they see you.”";
+  resultHTML += `<p><i>This result doesn’t reveal how people see you. It reveals how you believe they see you.</i></p>`;
+
+  document.getElementById("result").innerHTML = resultHTML;
 }
 </script>
 
