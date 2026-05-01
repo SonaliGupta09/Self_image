@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Social Perception Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .result {
+      margin-top: 30px;
+      padding: 20px;
+      border-top: 2px solid #000;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>What Do You Think Others Think About You?</h1>
+
+<form id="quizForm"></form>
+
+<button onclick="calculateResult()">Submit</button>
+
+<div id="result" class="result"></div>
+
+<script>
+const questions = [
+{
+q: "You’re having a good conversation with someone over text. After your last message, they stop replying—even though they’ve been online for a while.",
+options: ["They’re probably caught up in something","Maybe they’ll reply when they’re free","Did I say something that changed the vibe?","They’ve lost interest in talking to me"]
+},
+{
+q: "You’re talking to someone and suddenly their energy feels different—shorter replies, less enthusiasm than before.",
+options: ["Their mood probably shifted","Maybe they’re just tired or distracted","Did I do something wrong here?","They’re not enjoying this conversation anymore"]
+},
+{
+q: "You walk into a room where a group is already deep in conversation. No one acknowledges you immediately.",
+options: ["They’re just in the flow","I’ll join when it feels natural","That felt slightly off","They don’t really want me here"]
+},
+{
+q: "Someone compliments you in front of others.",
+options: ["That’s kind of them","Nice, I appreciate it","Do they actually mean it?","They’re just being polite"]
+},
+{
+q: "People laugh while glancing at you.",
+options: ["Probably unrelated","Could be coincidence","Is it about me?","They’re talking about me"]
+},
+{
+q: "A friend cancels plans last minute.",
+options: ["It happens","Maybe something came up","Maybe they didn’t feel like meeting","They didn’t want to meet me"]
+},
+{
+q: "You share something personal and get a short response.",
+options: ["People respond differently","Maybe they didn’t know what to say","Maybe I shared too much","They don’t care"]
+},
+{
+q: "You make a small mistake in public.",
+options: ["Normal","No big deal","People noticed","People judge me now"]
+},
+{
+q: "Others made a plan and didn’t include you.",
+options: ["Spontaneous","Situational","Maybe they forgot","They chose not to include me"]
+},
+{
+q: "Someone reads your message but replies late.",
+options: ["They’ll reply later","Thinking what to say","Feels off","Avoiding me"]
+},
+{
+q: "You notice a tone change in someone.",
+options: ["Unrelated","Bad day","Did I cause it?","Something is wrong"]
+},
+{
+q: "You’re quiet in a group.",
+options: ["Just listening","That’s okay","People notice","I add no value"]
+},
+{
+q: "You greet someone but they don’t respond.",
+options: ["Didn’t notice","Distracted","Felt odd","Ignored me"]
+},
+{
+q: "Your post gets low engagement.",
+options: ["Normal","Not seen","Not that good","People didn’t like it"]
+},
+{
+q: "You receive criticism.",
+options: ["Helpful","I’ll reflect","I messed up","They see me negatively"]
+}
+];
+
+const form = document.getElementById("quizForm");
+
+questions.forEach((item, index) => {
+  let div = document.createElement("div");
+  div.classList.add("question");
+  div.innerHTML = `<p><b>${index + 1}. ${item.q}</b></p>`;
+  
+  item.options.forEach((opt, i) => {
+    div.innerHTML += `
+      <label>
+        <input type="radio" name="q${index}" value="${i+1}" required />
+        ${opt}
+      </label><br/>
+    `;
+  });
+
+  form.appendChild(div);
+});
+
+function calculateResult() {
+  let total = 0;
+  let countC = 0;
+  let countD = 0;
+
+  for (let i = 0; i < questions.length; i++) {
+    let selected = document.querySelector(`input[name="q${i}"]:checked`);
+    if (!selected) return alert("Please answer all questions");
+
+    let val = parseInt(selected.value);
+    total += val;
+
+    if (val === 3) countC++;
+    if (val === 4) countD++;
+  }
+
+  let resultText = "";
+  let trait = "";
+
+  if (total <= 25) {
+    resultText = "🌿 The Grounded Observer\n\nYou don’t rush to interpret situations. You stay with reality instead of assumptions.";
+  } 
+  else if (total <= 38) {
+    resultText = "⚖️ The Thoughtful Interpreter\n\nYou notice behavior but don’t fully lose yourself in it.";
+  } 
+  else if (total <= 50) {
+    resultText = "🌊 The Over-Interpreter\n\nYou analyze deeply and often add extra meaning to situations.";
+  } 
+  else {
+    resultText = "🌑 The Inner Critic Projector\n\nYou often feel people are judging you even when nothing is said.";
+  }
+
+  // Hidden Traits
+  if (countD >= 7) {
+    trait = "\n\n⚡ You tend to jump to conclusions about what others think.";
+  } else if (countC >= 7) {
+    trait = "\n\n🌫️ You quietly doubt yourself in social situations.";
+  }
+
+  document.getElementById("result").innerText =
+    resultText + trait +
+    "\n\n“This result doesn’t reveal how people see you. It reveals how you believe they see you.”";
+}
+</script>
+
+</body>
+</html>
