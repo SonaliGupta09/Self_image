@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>How Do You See Yourself Through Others' Eyes?</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0c0c0f;
+    --surface: #13131a;
+    --surface2: #1c1c27;
+    --border: rgba(255,255,255,0.07);
+    --accent: #c9a96e;
+    --accent2: #8b7355;
+    --text: #e8e4dc;
+    --muted: #7a7a8a;
+    --glow: rgba(201,169,110,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* Radial ambient light */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80vw;
+    height: 60vh;
+    background: radial-gradient(ellipse, rgba(201,169,110,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ---- SCREENS ---- */
+  .screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+    z-index: 10;
+    overflow-y: auto;
+  }
+
+  .screen.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ---- LANDING ---- */
+  .landing-inner {
+    text-align: center;
+    max-width: 580px;
+    width: 100%;
+    animation: fadeUp 1s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .eyebrow::before, .eyebrow::after {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--accent2);
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 6vw, 58px);
+    font-weight: 300;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-bottom: 24px;
+    color: var(--text);
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .landing-desc {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--muted);
+    max-width: 420px;
+    margin: 0 auto 40px;
+    font-weight: 300;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent);
+    color: #0c0c0f;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 16px 40px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.15);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .btn-primary:hover::before { transform: scaleX(1); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(201,169,110,0.3); }
+
+  .meta-tags {
+    margin-top: 32px;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    text-transform: uppercase;
+  }
+
+  /* ---- QUIZ ---- */
+  .quiz-inner {
+    max-width: 680px;
+    width: 100%;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .progress-bar-wrap {
+    margin-bottom: 40px;
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .progress-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .progress-count {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    color: var(--accent);
+  }
+
+  .progress-track {
+    height: 2px;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    width: 0%;
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 0 12px var(--accent);
+  }
+
+  .question-block {
+    margin-bottom: 36px;
+  }
+
+  .q-context {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 14px;
+  }
+
+  .q-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(20px, 3.5vw, 28px);
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--text);
+  }
+
+  .options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 28px;
+  }
+
+  .option-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 18px 22px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .option-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--glow), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .option-btn:hover {
+    border-color: var(--accent2);
+    transform: translateX(4px);
+  }
+
+  .option-btn:hover::before { opacity: 1; }
+
+  .option-btn.selected {
+    border-color: var(--accent);
+    background: rgba(201,169,110,0.08);
+  }
+
+  .option-btn.selected::before { opacity: 1; }
+
+  .opt-letter {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-style: italic;
+    color: var(--accent);
+    min-width: 20px;
+    line-height: 1.4;
+    transition: color 0.2s;
+  }
+
+  .opt-text {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--muted);
+    font-weight: 300;
+    transition: color 0.2s;
+  }
+
+  .option-btn:hover .opt-text,
+  .option-btn.selected .opt-text {
+    color: var(--text);
+  }
+
+  .quiz-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+  }
+
+  .btn-ghost {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--muted);
+    color: var(--text);
+  }
+
+  .btn-ghost:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .btn-next {
+    background: none;
+    border: 1px solid var(--accent2);
+    color: var(--accent);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 12px 28px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-next:hover:not(:disabled) {
+    background: var(--accent);
+    color: #0c0c0f;
+    border-color: var(--accent);
+  }
+
+  .btn-next:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+  }
+
+  /* ---- RESULT ---- */
+  .result-inner {
+    max-width: 620px;
+    width: 100%;
+    animation: fadeUp 0.7s ease both;
+  }
+
+  .result-badge {
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .result-badge::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .result-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .result-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(30px, 5vw, 48px);
+    font-weight: 300;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .result-score-line {
+    font-size: 12px;
+    color: var(--accent2);
+    letter-spacing: 0.1em;
+    margin-bottom: 36px;
+  }
+
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 28px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .result-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--accent), var(--accent2));
+  }
+
+  .card-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 10px;
+  }
+
+  .card-text {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .card-text strong {
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  .blind-spot-card {
+    background: rgba(201,169,110,0.04);
+    border-color: rgba(201,169,110,0.15);
+  }
+
+  .shift-card {
+    text-align: center;
+    padding: 24px 32px;
+    background: linear-gradient(135deg, rgba(201,169,110,0.06), transparent);
+  }
+
+  .shift-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(18px, 3vw, 24px);
+    font-style: italic;
+    font-weight: 300;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .hidden-trait {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 16px 22px;
+    margin-bottom: 16px;
+  }
+
+  .trait-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .trait-text {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .trait-text strong { color: var(--text); }
+
+  .final-line {
+    text-align: center;
+    padding: 28px 0 0;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+
+  .final-line p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(15px, 2.5vw, 18px);
+    font-style: italic;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .restart-btn {
+    margin-top: 28px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* ---- TRANSITIONS ---- */
+  .slide-fade-enter {
+    animation: slideFadeIn 0.45s ease both;
+  }
+
+  @keyframes slideFadeIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+
+  @media (max-width: 480px) {
+    .screen { padding: 20px 16px; align-items: flex-start; padding-top: 40px; }
+    .option-btn { padding: 14px 16px; }
+    .result-card { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== LANDING ===== -->
+<div id="screen-landing" class="screen active">
+  <div class="landing-inner">
+    <div class="eyebrow">Self-Reflection Quiz</div>
+    <h1>How do you <em>believe</em><br>others see you?</h1>
+    <p class="landing-desc">
+      15 situational questions. No right answers.<br>
+      Discover the lens through which you interpret<br>the world — and what it reveals about you.
+    </p>
+    <button class="btn-primary" onclick="startQuiz()">
+      Begin the reflection
+      <span>→</span>
+    </button>
+    <div class="meta-tags">
+      <span class="tag">15 Questions</span>
+      <span class="tag">5 min</span>
+      <span class="tag">4 Result Types</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-inner">
+    <div class="progress-bar-wrap">
+      <div class="progress-meta">
+        <span class="progress-label">Question</span>
+        <span class="progress-count" id="q-count">1 / 15</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+
+    <div class="question-block" id="question-block">
+      <!-- Injected by JS -->
+    </div>
+
+    <div class="quiz-nav">
+      <button class="btn-ghost" id="btn-back" onclick="prevQuestion()" disabled>← Back</button>
+      <button class="btn-next" id="btn-next" onclick="nextQuestion()" disabled>Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RESULT ===== -->
+<div id="screen-result" class="screen">
+  <div class="result-inner" id="result-inner">
+    <!-- Injected by JS -->
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    context: "A text conversation",
+    text: "You're having a good conversation with someone over text. After your last message, they stop replying—even though they've been online for a while.",
+    options: [
+      "They're probably caught up in something",
+      "Maybe they'll reply when they're free",
+      "Did I say something that changed the vibe?",
+      "They've lost interest in talking to me"
+    ]
+  },
+  {
+    context: "A shift in energy",
+    text: "You're talking to someone and suddenly their energy feels different—shorter replies, less enthusiasm than before.",
+    options: [
+      "Their mood probably shifted",
+      "Maybe they're just tired or distracted",
+      "Did I do something wrong here?",
+      "They're not enjoying this conversation anymore"
+    ]
+  },
+  {
+    context: "Entering a room",
+    text: "You walk into a room where a group is already deep in conversation. No one acknowledges you immediately.",
+    options: [
+      "They're just in the flow of conversation",
+      "I'll wait and join when it feels natural",
+      "That felt slightly off",
+      "They don't really want me here"
+    ]
+  },
+  {
+    context: "A compliment",
+    text: "Someone compliments you in front of others, and people around react casually.",
+    options: [
+      "That's kind of them, I'll take it",
+      "Nice, I appreciate it",
+      "Do they actually mean it?",
+      "They're just saying it to be polite"
+    ]
+  },
+  {
+    context: "A shared laugh",
+    text: "You're sitting with people and they start laughing, occasionally glancing in your direction.",
+    options: [
+      "Probably unrelated to me",
+      "Could just be coincidence",
+      "I wonder if it's about me",
+      "They're talking about me"
+    ]
+  },
+  {
+    context: "Cancelled plans",
+    text: "A friend cancels plans at the last moment with a short message and no real explanation.",
+    options: [
+      "Things come up, it's okay",
+      "Maybe something urgent happened",
+      "Maybe they didn't feel like meeting",
+      "They didn't really want to meet me"
+    ]
+  },
+  {
+    context: "Opening up",
+    text: "You open up about something personal, but the other person responds briefly and changes the topic.",
+    options: [
+      "Not everyone knows how to respond",
+      "Maybe they didn't know what to say",
+      "Maybe I shared too much",
+      "They don't care about what I said"
+    ]
+  },
+  {
+    context: "A small mistake",
+    text: "You make a small mistake in front of others—something noticeable but not major.",
+    options: [
+      "It's normal, people move on",
+      "It happens, no big deal",
+      "People probably noticed that",
+      "People now see me differently"
+    ]
+  },
+  {
+    context: "Plans without you",
+    text: "Later, you find out a group made plans and you weren't included.",
+    options: [
+      "It might have been spontaneous",
+      "Could be situational",
+      "Maybe they forgot to include me",
+      "They chose not to include me"
+    ]
+  },
+  {
+    context: "A delayed reply",
+    text: "Someone reads your message but replies much later, even though they were active.",
+    options: [
+      "They'll respond when they can",
+      "Maybe they were thinking about what to say",
+      "That feels a bit off",
+      "They're avoiding the conversation"
+    ]
+  },
+  {
+    context: "A subtle shift",
+    text: "You notice a subtle change in how someone speaks to you compared to before.",
+    options: [
+      "Could be unrelated to me",
+      "Maybe they're having a rough day",
+      "Did I cause this shift somehow?",
+      "Something is wrong between us"
+    ]
+  },
+  {
+    context: "A quiet moment",
+    text: "You're in a group setting, and today you're quieter than usual, mostly listening.",
+    options: [
+      "I'm just taking it in",
+      "It's okay to not speak much",
+      "People might notice this",
+      "They think I don't add value"
+    ]
+  },
+  {
+    context: "An unnoticed greeting",
+    text: "You greet someone you know, but they don't respond immediately.",
+    options: [
+      "They probably didn't notice",
+      "Maybe they're distracted",
+      "That felt a bit uncomfortable",
+      "They ignored me"
+    ]
+  },
+  {
+    context: "Low engagement",
+    text: "You post something online that you liked, but it gets very little engagement.",
+    options: [
+      "Reach varies, it's normal",
+      "Not everyone saw it",
+      "Maybe it didn't land well",
+      "People didn't like it"
+    ]
+  },
+  {
+    context: "Receiving feedback",
+    text: "You receive feedback or criticism from someone you respect.",
+    options: [
+      "This can help me improve",
+      "I'll reflect on it",
+      "Maybe I made a mistake",
+      "They see me negatively now"
+    ]
+  }
+];
+
+const results = [
+  {
+    range: [15, 25],
+    emoji: "🌿",
+    title: "The Grounded\nObserver",
+    what: "When something happens, your mind doesn't rush to fill in the blanks. You let situations exist without immediately making them about you. While others might overthink a delayed reply or a shift in tone, you tend to stay with what's actually visible.",
+    why: "You've learned—consciously or unconsciously—that not everything needs interpretation. You allow space before assigning meaning.",
+    blind: "Because you don't over-interpret, you might sometimes under-read situations. Not everything is neutral—and occasionally, something is worth noticing.",
+    shift: "Not everything is about me — but some things are worth noticing.",
+    trait: "Detached Rationalizer",
+    traitDesc: "You stay grounded through logic. Just make sure you're not disconnecting from what you feel."
+  },
+  {
+    range: [26, 38],
+    emoji: "⚖️",
+    title: "The Thoughtful\nInterpreter",
+    what: "You notice shifts. You read between lines. But you don't completely lose yourself in those interpretations. You live in that in-between space—aware, but still trying to stay fair.",
+    why: "You understand that people's behavior can carry meaning. So you reflect—but you don't blindly assume.",
+    blind: "You can get caught in quiet "maybe loops." Not spiraling—but also not fully trusting your calm.",
+    shift: "I don't need to solve every behavior I notice.",
+    trait: "Silent Doubter",
+    traitDesc: "You don't jump to conclusions — but you often turn things inward and question yourself."
+  },
+  {
+    range: [39, 50],
+    emoji: "🌊",
+    title: "The\nOver-Interpreter",
+    what: "Moments don't just pass—you analyze them. A delay, a tone shift, a small reaction… everything starts to feel meaningful. You're not making things up—but you're often adding layers that may not exist.",
+    why: "Your mind is trying to stay ahead—to protect you from being caught off guard. So it looks for patterns, even in small things.",
+    blind: "You start treating possibilities like conclusions. And once that happens, it feels real.",
+    shift: "Not every pattern I notice is a message about me.",
+    trait: "Conclusion Jumper",
+    traitDesc: "You don't stay in uncertainty for long — you move toward conclusions, often negative ones."
+  },
+  {
+    range: [51, 60],
+    emoji: "🌑",
+    title: "The Inner Critic\nProjector",
+    what: "Many situations don't feel neutral to you. They feel like quiet signals—of judgment, disinterest, or rejection. Even when nothing is clearly said, something inside you fills in the blanks.",
+    why: "Your mind has learned to expect negative perception. So instead of waiting, it decides what others must be thinking.",
+    blind: "You're not actually reading people in those moments—you're projecting expectations onto them. And once that happens, it feels like truth.",
+    shift: "What I feel others think about me is not always what they actually think.",
+    trait: "Conclusion Jumper",
+    traitDesc: "You don't question your assumptions — you believe them. That certainty is what makes them powerful."
+  }
+];
+
+let current = 0;
+let answers = new Array(15).fill(null);
+
+function startQuiz() {
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  const block = document.getElementById('question-block');
+
+  block.innerHTML = `
+    <div class="q-context">${q.context}</div>
+    <div class="q-text">${q.text}</div>
+    <div class="options-grid">
+      ${q.options.map((opt, i) => `
+        <button class="option-btn ${answers[current] === i ? 'selected' : ''}"
+          onclick="selectOption(${i})">
+          <span class="opt-letter">${String.fromCharCode(65+i)}</span>
+          <span class="opt-text">${opt}</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+
+  block.classList.remove('slide-fade-enter');
+  void block.offsetWidth;
+  block.classList.add('slide-fade-enter');
+
+  document.getElementById('q-count').textContent = `${current + 1} / 15`;
+  const pct = ((current) / 15) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  document.getElementById('btn-back').disabled = current === 0;
+  document.getElementById('btn-next').disabled = answers[current] === null;
+
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.textContent = current === 14 ? 'See Results →' : 'Next →';
+}
+
+function selectOption(i) {
+  answers[current] = i;
+  document.querySelectorAll('.option-btn').forEach((btn, idx) => {
+    btn.classList.toggle('selected', idx === i);
+  });
+  document.getElementById('btn-next').disabled = false;
+}
+
+function nextQuestion() {
+  if (answers[current] === null) return;
+  if (current === 14) {
+    showResult();
+    return;
+  }
+  current++;
+  renderQuestion();
+  window.scrollTo(0, 0);
+}
+
+function prevQuestion() {
+  if (current === 0) return;
+  current--;
+  renderQuestion();
+  window.scrollTo(0, 0);
+}
+
+function showResult() {
+  const total = answers.reduce((sum, a) => sum + (a + 1), 0);
+  const res = results.find(r => total >= r.range[0] && total <= r.range[1]) || results[3];
+
+  const titleLines = res.title.split('\n');
+
+  document.getElementById('result-inner').innerHTML = `
+    <div class="result-badge">Your result</div>
+    <span class="result-icon">${res.emoji}</span>
+    <h2 class="result-title">${titleLines.join('<br>')}</h2>
+    <div class="result-score-line">Score: ${total} · ${res.range[0]}–${res.range[1]} range</div>
+
+    <div class="result-card">
+      <div class="card-label">What this says about you</div>
+      <div class="card-text">${res.what}</div>
+    </div>
+
+    <div class="result-card">
+      <div class="card-label">Why you think this way</div>
+      <div class="card-text">${res.why}</div>
+    </div>
+
+    <div class="result-card blind-spot-card">
+      <div class="card-label">⚠ Your blind spot</div>
+      <div class="card-text">${res.blind}</div>
+    </div>
+
+    <div class="result-card shift-card">
+      <div class="card-label" style="margin-bottom:14px;">Shift thought</div>
+      <div class="shift-quote">"${res.shift}"</div>
+    </div>
+
+    <div class="hidden-trait">
+      <div class="trait-dot"></div>
+      <div class="trait-text"><strong>Hidden trait:</strong> ${res.trait} — ${res.traitDesc}</div>
+    </div>
+
+    <div class="final-line">
+      <p>"This result doesn't reveal how people see you.<br>It reveals how you <em>believe</em> they see you."</p>
+    </div>
+
+    <div class="restart-btn">
+      <button class="btn-primary" onclick="restartQuiz()">Retake the quiz</button>
+    </div>
+  `;
+
+  showScreen('screen-result');
+}
+
+function restartQuiz() {
+  current = 0;
+  answers = new Array(15).fill(null);
+  showScreen('screen-landing');
+}
+</script>
+</body>
+</html>
