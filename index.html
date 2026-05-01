@@ -238,7 +238,6 @@ function nextQuestion() {
     showResult();
   }
 }
-
 function showResult() {
   document.getElementById("quiz").classList.remove("active");
   document.getElementById("result").classList.add("active");
@@ -248,30 +247,101 @@ function showResult() {
   let countD = answers.filter(x=>x===4).length;
 
   let resultHTML = "";
+  let hiddenTrait = "";
+
+  // Hidden Trait Logic
+  if (countD >= 7) {
+    hiddenTrait = `
+    <h4>🧩 Hidden Trait: Conclusion Jumper</h4>
+    <p>You don’t stay in uncertainty for long—you move toward conclusions, often negative ones.</p>`;
+  } 
+  else if (countC >= 7) {
+    hiddenTrait = `
+    <h4>🧩 Hidden Trait: Silent Doubter</h4>
+    <p>You don’t jump to conclusions—but you quietly turn things inward and question yourself.</p>`;
+  }
+
+  // RESULT TYPES
 
   if (total <= 25) {
-    resultHTML = `<h2>🌿 The Grounded Observer</h2>
-    <p>You don’t rush to interpret situations. You let things be before making them about you.</p>`;
-  } else if (total <= 38) {
-    resultHTML = `<h2>⚖️ The Thoughtful Interpreter</h2>
-    <p>You notice behavior but don’t fully lose yourself in it.</p>`;
-  } else if (total <= 50) {
-    resultHTML = `<h2>🌊 The Over-Interpreter</h2>
-    <p>You analyze deeply and often add extra meaning.</p>`;
-  } else {
-    resultHTML = `<h2>🌑 The Inner Critic Projector</h2>
-    <p>You often feel people are judging you even when nothing is said.</p>`;
+    resultHTML = `
+    <h2>🌿 The Grounded Observer</h2>
+
+    <h3>🧠 What this says about you</h3>
+    <p>When something happens, your mind doesn’t rush to fill in the blanks. You let situations exist without immediately making them about you.</p>
+
+    <h3>🔍 Why you think this way</h3>
+    <p>You’ve learned that not everything needs interpretation. You allow space before assigning meaning.</p>
+
+    <h3>⚠️ Your blind spot</h3>
+    <p>You might sometimes under-read situations. Not everything is neutral—and occasionally something is worth noticing.</p>
+
+    <h3>🔄 Shift thought</h3>
+    <p><i>“Not everything is about me—but some things are worth noticing.”</i></p>
+    `;
   }
 
-  if (countD >= 7) {
-    resultHTML += `<p><b>Hidden Trait:</b> You tend to jump to conclusions about what others think.</p>`;
-  } else if (countC >= 7) {
-    resultHTML += `<p><b>Hidden Trait:</b> You quietly doubt yourself in social situations.</p>`;
+  else if (total <= 38) {
+    resultHTML = `
+    <h2>⚖️ The Thoughtful Interpreter</h2>
+
+    <h3>🧠 What this says about you</h3>
+    <p>You notice shifts and read between lines—but you don’t completely lose yourself in those interpretations.</p>
+
+    <h3>🔍 Why you think this way</h3>
+    <p>You understand that behavior can carry meaning, so you reflect—but you try to stay fair.</p>
+
+    <h3>⚠️ Your blind spot</h3>
+    <p>You can get stuck in “maybe loops”—not spiraling, but not fully trusting your calm either.</p>
+
+    <h3>🔄 Shift thought</h3>
+    <p><i>“I don’t need to solve every behavior I notice.”</i></p>
+    `;
   }
 
-  resultHTML += `<p><i>This result doesn’t reveal how people see you. It reveals how you believe they see you.</i></p>`;
+  else if (total <= 50) {
+    resultHTML = `
+    <h2>🌊 The Over-Interpreter</h2>
 
-  document.getElementById("result").innerHTML = resultHTML;
+    <h3>🧠 What this says about you</h3>
+    <p>Moments don’t just pass—you analyze them. A delay, a tone shift, a small reaction… everything starts to feel meaningful.</p>
+    <p>You’re not making things up—but you’re often adding layers that may not exist.</p>
+
+    <h3>🔍 Why you think this way</h3>
+    <p>Your mind is trying to stay ahead—to protect you from being caught off guard. So it looks for patterns, even in small things.</p>
+
+    <h3>⚠️ Your blind spot</h3>
+    <p>You start treating possibilities like conclusions. And once that happens, it feels real.</p>
+
+    <h3>🔄 Shift thought</h3>
+    <p><i>“Not every pattern I notice is a message about me.”</i></p>
+    `;
+  }
+
+  else {
+    resultHTML = `
+    <h2>🌑 The Inner Critic Projector</h2>
+
+    <h3>🧠 What this says about you</h3>
+    <p>Many situations don’t feel neutral to you. They feel like quiet signals of judgment, disinterest, or rejection.</p>
+
+    <h3>🔍 Why you think this way</h3>
+    <p>Your mind has learned to expect negative perception. So instead of waiting, it fills in the blanks immediately.</p>
+
+    <h3>⚠️ Your blind spot</h3>
+    <p>You’re not actually reading people—you’re projecting expectations onto them.</p>
+
+    <h3>🔄 Shift thought</h3>
+    <p><i>“What I feel others think about me is not always what they actually think.”</i></p>
+    `;
+  }
+
+  document.getElementById("result").innerHTML =
+    resultHTML +
+    hiddenTrait +
+    `<hr>
+    <p><b>This result doesn’t reveal how people see you.<br>
+    It reveals how you believe they see you.</b></p>`;
 }
 </script>
 
