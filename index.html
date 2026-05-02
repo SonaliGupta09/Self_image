@@ -19,7 +19,6 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
 
   body {
@@ -28,64 +27,52 @@
     color: var(--text);
     min-height: 100vh;
     overflow-x: hidden;
-    cursor: default;
   }
 
-  /* Noise texture overlay */
+  /* Noise overlay — pointer-events none so it NEVER intercepts clicks */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
     pointer-events: none;
-    z-index: 1000;
+    z-index: 999;
     opacity: 0.4;
   }
 
-  /* Radial ambient light */
+  /* Ambient glow */
   body::after {
     content: '';
     position: fixed;
-    top: -20%;
-    left: 50%;
+    top: -20%; left: 50%;
     transform: translateX(-50%);
-    width: 80vw;
-    height: 60vh;
+    width: 80vw; height: 60vh;
     background: radial-gradient(ellipse, rgba(201,169,110,0.06) 0%, transparent 70%);
     pointer-events: none;
     z-index: 0;
   }
 
-  /* ---- SCREENS ----
-     KEY FIX: Use display:none / display:flex instead of opacity + pointer-events.
-     Also switched from position:fixed to a normal block flow so scrolling works
-     properly on all browsers, especially mobile.
+  /* ======= SCREENS =======
+     display:none / display:flex toggle — clean, reliable, no z-index conflicts
   */
   .screen {
     display: none;
     min-height: 100vh;
     align-items: center;
     justify-content: center;
-    padding: 48px 24px;
+    padding: 60px 24px;
     position: relative;
     z-index: 10;
   }
-
-  .screen.active {
-    display: flex;
-  }
-
-  /* Fade-in animation applied when screen becomes active */
-  .screen.active > * {
-    animation: fadeUp 0.6s ease both;
-  }
+  .screen.active { display: flex; }
+  .screen.active > div { animation: fadeUp 0.65s ease both; }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(28px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* ---- LANDING ---- */
+  /* ======= LANDING ======= */
   .landing-inner {
     text-align: center;
     max-width: 580px;
@@ -93,147 +80,130 @@
   }
 
   .eyebrow {
-    font-family: 'DM Sans', sans-serif;
     font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.25em;
     text-transform: uppercase;
     color: var(--accent);
-    margin-bottom: 24px;
+    margin-bottom: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 12px;
   }
-
   .eyebrow::before, .eyebrow::after {
     content: '';
-    width: 40px;
-    height: 1px;
+    width: 40px; height: 1px;
     background: var(--accent2);
   }
 
   h1 {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(36px, 6vw, 58px);
+    font-size: clamp(38px, 6vw, 62px);
     font-weight: 300;
     line-height: 1.15;
     letter-spacing: -0.01em;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
     color: var(--text);
   }
-
-  h1 em {
-    font-style: italic;
-    color: var(--accent);
-  }
+  h1 em { font-style: italic; color: var(--accent); }
 
   .landing-desc {
     font-size: 15px;
-    line-height: 1.7;
+    line-height: 1.75;
     color: var(--muted);
     max-width: 420px;
-    margin: 0 auto 40px;
+    margin: 0 auto 44px;
     font-weight: 300;
   }
 
   .btn-primary {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     background: var(--accent);
     color: #0c0c0f;
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     font-weight: 500;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    padding: 16px 40px;
+    padding: 18px 44px;
     border: none;
     cursor: pointer;
-    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
-
   .btn-primary::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.18);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.4s ease;
   }
-
   .btn-primary:hover::before { transform: scaleX(1); }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(201,169,110,0.3); }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 44px rgba(201,169,110,0.35);
+  }
 
   .meta-tags {
-    margin-top: 32px;
+    margin-top: 36px;
     display: flex;
     gap: 8px;
     justify-content: center;
     flex-wrap: wrap;
   }
-
   .tag {
     font-size: 11px;
     letter-spacing: 0.1em;
     color: var(--muted);
     border: 1px solid var(--border);
-    padding: 5px 12px;
+    padding: 6px 14px;
     text-transform: uppercase;
   }
 
-  /* ---- QUIZ ---- */
+  /* ======= QUIZ ======= */
   .quiz-inner {
     max-width: 680px;
     width: 100%;
   }
 
-  .progress-bar-wrap {
-    margin-bottom: 40px;
-  }
-
+  .progress-bar-wrap { margin-bottom: 44px; }
   .progress-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
   }
-
   .progress-label {
     font-size: 11px;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: var(--muted);
   }
-
   .progress-count {
     font-family: 'Cormorant Garamond', serif;
     font-size: 20px;
     color: var(--accent);
   }
-
   .progress-track {
     height: 2px;
     background: var(--border);
-    position: relative;
     overflow: hidden;
   }
-
   .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--accent2), var(--accent));
     width: 0%;
     transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
-    box-shadow: 0 0 12px var(--accent);
+    box-shadow: 0 0 10px var(--accent);
   }
 
-  .question-block {
-    margin-bottom: 36px;
-  }
+  .question-block { margin-bottom: 36px; }
 
   .q-context {
     font-size: 12px;
@@ -242,12 +212,11 @@
     color: var(--accent2);
     margin-bottom: 14px;
   }
-
   .q-text {
     font-family: 'Cormorant Garamond', serif;
     font-size: clamp(20px, 3.5vw, 28px);
     font-weight: 400;
-    line-height: 1.4;
+    line-height: 1.45;
     color: var(--text);
   }
 
@@ -266,34 +235,24 @@
     background: var(--surface);
     border: 1px solid var(--border);
     cursor: pointer;
-    transition: all 0.25s ease;
     text-align: left;
+    width: 100%;
     position: relative;
     overflow: hidden;
-    width: 100%;
+    transition: border-color 0.25s, transform 0.25s;
   }
-
   .option-btn::before {
     content: '';
     position: absolute;
     inset: 0;
     background: linear-gradient(135deg, var(--glow), transparent);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s;
+    pointer-events: none;
   }
-
-  .option-btn:hover {
-    border-color: var(--accent2);
-    transform: translateX(4px);
-  }
-
+  .option-btn:hover { border-color: var(--accent2); transform: translateX(4px); }
   .option-btn:hover::before { opacity: 1; }
-
-  .option-btn.selected {
-    border-color: var(--accent);
-    background: rgba(201,169,110,0.08);
-  }
-
+  .option-btn.selected { border-color: var(--accent); background: rgba(201,169,110,0.08); }
   .option-btn.selected::before { opacity: 1; }
 
   .opt-letter {
@@ -303,28 +262,23 @@
     color: var(--accent);
     min-width: 20px;
     line-height: 1.4;
-    transition: color 0.2s;
     flex-shrink: 0;
   }
-
   .opt-text {
     font-size: 14px;
-    line-height: 1.55;
+    line-height: 1.6;
     color: var(--muted);
     font-weight: 300;
     transition: color 0.2s;
   }
-
   .option-btn:hover .opt-text,
-  .option-btn.selected .opt-text {
-    color: var(--text);
-  }
+  .option-btn.selected .opt-text { color: var(--text); }
 
   .quiz-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 32px;
+    margin-top: 36px;
   }
 
   .btn-ghost {
@@ -337,18 +291,10 @@
     text-transform: uppercase;
     padding: 12px 24px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: border-color 0.2s, color 0.2s;
   }
-
-  .btn-ghost:hover:not(:disabled) {
-    border-color: var(--muted);
-    color: var(--text);
-  }
-
-  .btn-ghost:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
+  .btn-ghost:hover:not(:disabled) { border-color: var(--muted); color: var(--text); }
+  .btn-ghost:disabled { opacity: 0.3; cursor: not-allowed; }
 
   .btn-next {
     background: none;
@@ -358,93 +304,73 @@
     font-size: 12px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    padding: 12px 28px;
+    padding: 12px 32px;
     cursor: pointer;
     transition: all 0.3s ease;
   }
-
   .btn-next:hover:not(:disabled) {
     background: var(--accent);
     color: #0c0c0f;
     border-color: var(--accent);
   }
+  .btn-next:disabled { opacity: 0.25; cursor: not-allowed; }
 
-  .btn-next:disabled {
-    opacity: 0.25;
-    cursor: not-allowed;
-  }
-
-  /* ---- RESULT ---- */
-  /* Result screen: top-aligned so long content scrolls naturally */
+  /* ======= RESULT ======= */
   #screen-result {
     align-items: flex-start;
-    padding-top: 60px;
-    padding-bottom: 60px;
+    padding-top: 64px;
+    padding-bottom: 80px;
   }
 
-  .result-inner {
-    max-width: 620px;
-    width: 100%;
-  }
+  .result-inner { max-width: 620px; width: 100%; }
 
   .result-badge {
     font-size: 11px;
     letter-spacing: 0.25em;
     text-transform: uppercase;
     color: var(--accent2);
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     display: flex;
     align-items: center;
     gap: 10px;
   }
-
   .result-badge::after {
     content: '';
-    flex: 1;
-    height: 1px;
+    flex: 1; height: 1px;
     background: var(--border);
   }
 
-  .result-icon {
-    font-size: 48px;
-    margin-bottom: 16px;
-    display: block;
-  }
+  .result-icon { font-size: 52px; margin-bottom: 16px; display: block; }
 
   .result-title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(30px, 5vw, 48px);
+    font-size: clamp(30px, 5vw, 50px);
     font-weight: 300;
     line-height: 1.2;
     color: var(--text);
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
-
   .result-score-line {
     font-size: 12px;
     color: var(--accent2);
     letter-spacing: 0.1em;
-    margin-bottom: 36px;
+    margin-bottom: 40px;
   }
 
   .result-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    padding: 28px;
+    padding: 28px 28px 28px 34px;
     margin-bottom: 16px;
     position: relative;
   }
-
   .result-card::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 3px;
-    height: 100%;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
     background: linear-gradient(180deg, var(--accent), var(--accent2));
   }
-
   .card-label {
     font-size: 10px;
     letter-spacing: 0.2em;
@@ -452,33 +378,25 @@
     color: var(--accent2);
     margin-bottom: 10px;
   }
-
   .card-text {
     font-size: 14px;
-    line-height: 1.75;
+    line-height: 1.8;
     color: var(--muted);
     font-weight: 300;
-  }
-
-  .card-text strong {
-    color: var(--text);
-    font-weight: 400;
   }
 
   .blind-spot-card {
     background: rgba(201,169,110,0.04);
     border-color: rgba(201,169,110,0.15);
   }
-
   .shift-card {
     text-align: center;
-    padding: 24px 32px;
+    padding: 28px 36px;
     background: linear-gradient(135deg, rgba(201,169,110,0.06), transparent);
   }
-
   .shift-quote {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(18px, 3vw, 24px);
+    font-size: clamp(18px, 3vw, 26px);
     font-style: italic;
     font-weight: 300;
     color: var(--text);
@@ -494,20 +412,13 @@
     padding: 16px 22px;
     margin-bottom: 16px;
   }
-
   .trait-dot {
-    width: 8px;
-    height: 8px;
+    width: 8px; height: 8px;
     background: var(--accent);
     border-radius: 50%;
     flex-shrink: 0;
   }
-
-  .trait-text {
-    font-size: 13px;
-    color: var(--muted);
-  }
-
+  .trait-text { font-size: 13px; color: var(--muted); }
   .trait-text strong { color: var(--text); }
 
   .final-line {
@@ -516,68 +427,64 @@
     border-top: 1px solid var(--border);
     margin-top: 8px;
   }
-
   .final-line p {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(15px, 2.5vw, 18px);
+    font-size: clamp(15px, 2.5vw, 19px);
     font-style: italic;
     color: var(--muted);
-    line-height: 1.6;
+    line-height: 1.65;
   }
+  .final-line em { color: var(--accent); }
 
-  .restart-btn {
-    margin-top: 28px;
+  .restart-wrap {
+    margin-top: 32px;
     display: flex;
     justify-content: center;
   }
 
-  /* ---- TRANSITIONS ---- */
-  .slide-fade-enter {
-    animation: slideFadeIn 0.45s ease both;
-  }
-
   @keyframes slideFadeIn {
-    from { opacity: 0; transform: translateX(20px); }
+    from { opacity: 0; transform: translateX(18px); }
     to   { opacity: 1; transform: translateX(0); }
   }
+  .slide-in { animation: slideFadeIn 0.4s ease both; }
 
-  /* Scrollbar */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); }
 
-  @media (max-width: 480px) {
-    .screen { padding: 32px 16px; }
-    #screen-result { padding-top: 40px; padding-bottom: 40px; }
-    .option-btn { padding: 14px 16px; }
-    .result-card { padding: 20px; }
+  @media (max-width: 520px) {
+    .screen { padding: 40px 16px; }
+    #screen-result { padding-top: 44px; padding-bottom: 60px; }
+    .option-btn { padding: 14px 14px; }
+    .result-card { padding: 18px 18px 18px 26px; }
+    .shift-card { padding: 20px; }
   }
 </style>
 </head>
 <body>
 
-<!-- ===== LANDING ===== -->
+<!-- LANDING -->
 <div id="screen-landing" class="screen active">
   <div class="landing-inner">
     <div class="eyebrow">Self-Reflection Quiz</div>
     <h1>How do you <em>believe</em><br>others see you?</h1>
     <p class="landing-desc">
       15 situational questions. No right answers.<br>
-      Discover the lens through which you interpret<br>the world — and what it reveals about you.
+      Discover the lens through which you interpret<br>
+      the world — and what it reveals about you.
     </p>
-    <button class="btn-primary" onclick="startQuiz()">
-      Begin the Reflection
-      <span>→</span>
+    <button id="btn-start" class="btn-primary">
+      Begin the Reflection <span>&#8594;</span>
     </button>
     <div class="meta-tags">
       <span class="tag">15 Questions</span>
-      <span class="tag">5 min</span>
+      <span class="tag">5 Min</span>
       <span class="tag">4 Result Types</span>
     </div>
   </div>
 </div>
 
-<!-- ===== QUIZ ===== -->
+<!-- QUIZ -->
 <div id="screen-quiz" class="screen">
   <div class="quiz-inner">
     <div class="progress-bar-wrap">
@@ -589,30 +496,24 @@
         <div class="progress-fill" id="progress-fill"></div>
       </div>
     </div>
-
-    <div class="question-block" id="question-block">
-      <!-- Injected by JS -->
-    </div>
-
+    <div class="question-block" id="question-block"></div>
     <div class="quiz-nav">
-      <button class="btn-ghost" id="btn-back" onclick="prevQuestion()" disabled>← Back</button>
-      <button class="btn-next" id="btn-next" onclick="nextQuestion()" disabled>Next →</button>
+      <button class="btn-ghost" id="btn-back" disabled>&#8592; Back</button>
+      <button class="btn-next" id="btn-next" disabled>Next &#8594;</button>
     </div>
   </div>
 </div>
 
-<!-- ===== RESULT ===== -->
+<!-- RESULT -->
 <div id="screen-result" class="screen">
-  <div class="result-inner" id="result-inner">
-    <!-- Injected by JS -->
-  </div>
+  <div class="result-inner" id="result-inner"></div>
 </div>
 
 <script>
-const questions = [
+var questions = [
   {
     context: "A text conversation",
-    text: "You're having a good conversation with someone over text. After your last message, they stop replying—even though they've been online for a while.",
+    text: "You're having a good conversation with someone over text. After your last message, they stop replying\u2014even though they've been online for a while.",
     options: [
       "They're probably caught up in something",
       "Maybe they'll reply when they're free",
@@ -622,7 +523,7 @@ const questions = [
   },
   {
     context: "A shift in energy",
-    text: "You're talking to someone and suddenly their energy feels different—shorter replies, less enthusiasm than before.",
+    text: "You're talking to someone and suddenly their energy feels different\u2014shorter replies, less enthusiasm than before.",
     options: [
       "Their mood probably shifted",
       "Maybe they're just tired or distracted",
@@ -682,7 +583,7 @@ const questions = [
   },
   {
     context: "A small mistake",
-    text: "You make a small mistake in front of others—something noticeable but not major.",
+    text: "You make a small mistake in front of others\u2014something noticeable but not major.",
     options: [
       "It's normal, people move on",
       "It happens, no big deal",
@@ -762,117 +663,124 @@ const questions = [
   }
 ];
 
-const results = [
+var results = [
   {
     range: [15, 25],
-    emoji: "🌿",
+    emoji: "\uD83C\uDF3F",
     title: "The Grounded\nObserver",
     what: "When something happens, your mind doesn't rush to fill in the blanks. You let situations exist without immediately making them about you. While others might overthink a delayed reply or a shift in tone, you tend to stay with what's actually visible.",
-    why: "You've learned—consciously or unconsciously—that not everything needs interpretation. You allow space before assigning meaning.",
-    blind: "Because you don't over-interpret, you might sometimes under-read situations. Not everything is neutral—and occasionally, something is worth noticing.",
-    shift: "Not everything is about me — but some things are worth noticing.",
+    why: "You've learned\u2014consciously or unconsciously\u2014that not everything needs interpretation. You allow space before assigning meaning.",
+    blind: "Because you don't over-interpret, you might sometimes under-read situations. Not everything is neutral\u2014and occasionally, something is worth noticing.",
+    shift: "Not everything is about me \u2014 but some things are worth noticing.",
     trait: "Detached Rationalizer",
     traitDesc: "You stay grounded through logic. Just make sure you're not disconnecting from what you feel."
   },
   {
     range: [26, 38],
-    emoji: "⚖️",
+    emoji: "\u2696\uFE0F",
     title: "The Thoughtful\nInterpreter",
-    what: "You notice shifts. You read between lines. But you don't completely lose yourself in those interpretations. You live in that in-between space—aware, but still trying to stay fair.",
-    why: "You understand that people's behavior can carry meaning. So you reflect—but you don't blindly assume.",
-    blind: "You can get caught in quiet "maybe loops." Not spiraling—but also not fully trusting your calm.",
+    what: "You notice shifts. You read between lines. But you don't completely lose yourself in those interpretations. You live in that in-between space\u2014aware, but still trying to stay fair.",
+    why: "You understand that people's behavior can carry meaning. So you reflect\u2014but you don't blindly assume.",
+    blind: "You can get caught in quiet \u201cmaybe loops.\u201d Not spiraling\u2014but also not fully trusting your calm.",
     shift: "I don't need to solve every behavior I notice.",
     trait: "Silent Doubter",
-    traitDesc: "You don't jump to conclusions — but you often turn things inward and question yourself."
+    traitDesc: "You don't jump to conclusions \u2014 but you often turn things inward and question yourself."
   },
   {
     range: [39, 50],
-    emoji: "🌊",
+    emoji: "\uD83C\uDF0A",
     title: "The\nOver-Interpreter",
-    what: "Moments don't just pass—you analyze them. A delay, a tone shift, a small reaction… everything starts to feel meaningful. You're not making things up—but you're often adding layers that may not exist.",
-    why: "Your mind is trying to stay ahead—to protect you from being caught off guard. So it looks for patterns, even in small things.",
+    what: "Moments don't just pass\u2014you analyze them. A delay, a tone shift, a small reaction\u2026 everything starts to feel meaningful. You're not making things up\u2014but you're often adding layers that may not exist.",
+    why: "Your mind is trying to stay ahead\u2014to protect you from being caught off guard. So it looks for patterns, even in small things.",
     blind: "You start treating possibilities like conclusions. And once that happens, it feels real.",
     shift: "Not every pattern I notice is a message about me.",
     trait: "Conclusion Jumper",
-    traitDesc: "You don't stay in uncertainty for long — you move toward conclusions, often negative ones."
+    traitDesc: "You don't stay in uncertainty for long \u2014 you move toward conclusions, often negative ones."
   },
   {
     range: [51, 60],
-    emoji: "🌑",
+    emoji: "\uD83C\uDF11",
     title: "The Inner Critic\nProjector",
-    what: "Many situations don't feel neutral to you. They feel like quiet signals—of judgment, disinterest, or rejection. Even when nothing is clearly said, something inside you fills in the blanks.",
+    what: "Many situations don't feel neutral to you. They feel like quiet signals\u2014of judgment, disinterest, or rejection. Even when nothing is clearly said, something inside you fills in the blanks.",
     why: "Your mind has learned to expect negative perception. So instead of waiting, it decides what others must be thinking.",
-    blind: "You're not actually reading people in those moments—you're projecting expectations onto them. And once that happens, it feels like truth.",
+    blind: "You're not actually reading people in those moments\u2014you're projecting expectations onto them. And once that happens, it feels like truth.",
     shift: "What I feel others think about me is not always what they actually think.",
     trait: "Conclusion Jumper",
-    traitDesc: "You don't question your assumptions — you believe them. That certainty is what makes them powerful."
+    traitDesc: "You don't question your assumptions \u2014 you believe them. That certainty is what makes them powerful."
   }
 ];
 
-let current = 0;
-let answers = new Array(15).fill(null);
-
-function startQuiz() {
-  showScreen('screen-quiz');
-  renderQuestion();
-}
+var current = 0;
+var answers = new Array(15).fill(null);
 
 function showScreen(id) {
-  console.log("Switching to:", id); 
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  var screens = document.querySelectorAll('.screen');
+  for (var i = 0; i < screens.length; i++) {
+    screens[i].classList.remove('active');
+  }
   document.getElementById(id).classList.add('active');
   window.scrollTo(0, 0);
 }
 
 function renderQuestion() {
-  const q = questions[current];
-  const block = document.getElementById('question-block');
+  var q = questions[current];
+  var block = document.getElementById('question-block');
 
-  block.innerHTML = `
-    <div class="q-context">${q.context}</div>
-    <div class="q-text">${q.text}</div>
-    <div class="options-grid">
-      ${q.options.map((opt, i) => `
-        <button class="option-btn ${answers[current] === i ? 'selected' : ''}"
-          onclick="selectOption(${i})">
-          <span class="opt-letter">${String.fromCharCode(65 + i)}</span>
-          <span class="opt-text">${opt}</span>
-        </button>
-      `).join('')}
-    </div>
-  `;
+  var optionsHTML = '';
+  for (var i = 0; i < q.options.length; i++) {
+    var letter = String.fromCharCode(65 + i);
+    var sel = answers[current] === i ? ' selected' : '';
+    optionsHTML +=
+      '<button class="option-btn' + sel + '" data-index="' + i + '">' +
+        '<span class="opt-letter">' + letter + '</span>' +
+        '<span class="opt-text">' + q.options[i] + '</span>' +
+      '</button>';
+  }
 
-  block.classList.remove('slide-fade-enter');
+  block.innerHTML =
+    '<div class="q-context">' + q.context + '</div>' +
+    '<div class="q-text">' + q.text + '</div>' +
+    '<div class="options-grid">' + optionsHTML + '</div>';
+
+  // Slide animation
+  block.classList.remove('slide-in');
   void block.offsetWidth;
-  block.classList.add('slide-fade-enter');
+  block.classList.add('slide-in');
 
-  document.getElementById('q-count').textContent = `${current + 1} / 15`;
+  // Progress
+  document.getElementById('q-count').textContent = (current + 1) + ' / 15';
+  document.getElementById('progress-fill').style.width = ((current / 15) * 100) + '%';
 
-  // Progress fill: 0% at Q1, 100% when all answered
-  const pct = (current / 15) * 100;
-  document.getElementById('progress-fill').style.width = pct + '%';
+  // Nav state
+  var btnBack = document.getElementById('btn-back');
+  var btnNext = document.getElementById('btn-next');
+  btnBack.disabled = (current === 0);
+  btnNext.disabled = (answers[current] === null);
+  btnNext.textContent = (current === 14) ? 'See Results \u2192' : 'Next \u2192';
 
-  document.getElementById('btn-back').disabled = current === 0;
-  document.getElementById('btn-next').disabled = answers[current] === null;
-
-  const nextBtn = document.getElementById('btn-next');
-  nextBtn.textContent = current === 14 ? 'See Results →' : 'Next →';
+  // Attach option listeners (fresh each render)
+  var optBtns = block.querySelectorAll('.option-btn');
+  for (var j = 0; j < optBtns.length; j++) {
+    optBtns[j].addEventListener('click', handleOptionClick);
+  }
 }
 
-function selectOption(i) {
-  answers[current] = i;
-  document.querySelectorAll('.option-btn').forEach((btn, idx) => {
-    btn.classList.toggle('selected', idx === i);
-  });
+function handleOptionClick(e) {
+  var btn = e.currentTarget;
+  var idx = parseInt(btn.getAttribute('data-index'), 10);
+  answers[current] = idx;
+
+  var allBtns = document.querySelectorAll('.option-btn');
+  for (var i = 0; i < allBtns.length; i++) {
+    allBtns[i].classList.toggle('selected', i === idx);
+  }
+
   document.getElementById('btn-next').disabled = false;
 }
 
 function nextQuestion() {
   if (answers[current] === null) return;
-  if (current === 14) {
-    showResult();
-    return;
-  }
+  if (current === 14) { showResult(); return; }
   current++;
   renderQuestion();
   window.scrollTo(0, 0);
@@ -886,59 +794,53 @@ function prevQuestion() {
 }
 
 function showResult() {
-  const total = answers.reduce((sum, a) => sum + (a + 1), 0);
-  const res = results.find(r => total >= r.range[0] && total <= r.range[1]) || results[3];
+  var total = 0;
+  for (var i = 0; i < answers.length; i++) total += (answers[i] + 1);
 
-  const titleLines = res.title.split('\n');
+  var res = results[results.length - 1];
+  for (var r = 0; r < results.length; r++) {
+    if (total >= results[r].range[0] && total <= results[r].range[1]) {
+      res = results[r]; break;
+    }
+  }
 
-  document.getElementById('result-inner').innerHTML = `
-    <div class="result-badge">Your result</div>
-    <span class="result-icon">${res.emoji}</span>
-    <h2 class="result-title">${titleLines.join('<br>')}</h2>
-    <div class="result-score-line">Score: ${total} · ${res.range[0]}–${res.range[1]} range</div>
+  var titleHTML = res.title.replace('\n', '<br>');
 
-    <div class="result-card">
-      <div class="card-label">What this says about you</div>
-      <div class="card-text">${res.what}</div>
-    </div>
+  document.getElementById('result-inner').innerHTML =
+    '<div class="result-badge">Your result</div>' +
+    '<span class="result-icon">' + res.emoji + '</span>' +
+    '<h2 class="result-title">' + titleHTML + '</h2>' +
+    '<div class="result-score-line">Score: ' + total + ' &middot; ' + res.range[0] + '&ndash;' + res.range[1] + ' range</div>' +
 
-    <div class="result-card">
-      <div class="card-label">Why you think this way</div>
-      <div class="card-text">${res.why}</div>
-    </div>
+    '<div class="result-card"><div class="card-label">What this says about you</div><div class="card-text">' + res.what + '</div></div>' +
+    '<div class="result-card"><div class="card-label">Why you think this way</div><div class="card-text">' + res.why + '</div></div>' +
+    '<div class="result-card blind-spot-card"><div class="card-label">&#9888; Your blind spot</div><div class="card-text">' + res.blind + '</div></div>' +
+    '<div class="result-card shift-card"><div class="card-label" style="margin-bottom:14px;">Shift thought</div><div class="shift-quote">&ldquo;' + res.shift + '&rdquo;</div></div>' +
 
-    <div class="result-card blind-spot-card">
-      <div class="card-label">⚠ Your blind spot</div>
-      <div class="card-text">${res.blind}</div>
-    </div>
+    '<div class="hidden-trait"><div class="trait-dot"></div><div class="trait-text"><strong>Hidden trait:</strong> ' + res.trait + ' &mdash; ' + res.traitDesc + '</div></div>' +
 
-    <div class="result-card shift-card">
-      <div class="card-label" style="margin-bottom:14px;">Shift thought</div>
-      <div class="shift-quote">"${res.shift}"</div>
-    </div>
+    '<div class="final-line"><p>&ldquo;This result doesn\'t reveal how people see you.<br>It reveals how you <em>believe</em> they see you.&rdquo;</p></div>' +
 
-    <div class="hidden-trait">
-      <div class="trait-dot"></div>
-      <div class="trait-text"><strong>Hidden trait:</strong> ${res.trait} — ${res.traitDesc}</div>
-    </div>
-
-    <div class="final-line">
-      <p>"This result doesn't reveal how people see you.<br>It reveals how you <em>believe</em> they see you."</p>
-    </div>
-
-    <div class="restart-btn">
-      <button class="btn-primary" onclick="restartQuiz()">Retake the quiz</button>
-    </div>
-  `;
+    '<div class="restart-wrap"><button id="btn-retake" class="btn-primary">Retake the quiz</button></div>';
 
   showScreen('screen-result');
+
+  document.getElementById('btn-retake').addEventListener('click', function() {
+    current = 0;
+    answers = new Array(15).fill(null);
+    showScreen('screen-landing');
+  });
 }
 
-function restartQuiz() {
-  current = 0;
-  answers = new Array(15).fill(null);
-  showScreen('screen-landing');
-}
+// ── INIT: wire up all static buttons after DOM loads ──
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('btn-start').addEventListener('click', function() {
+    showScreen('screen-quiz');
+    renderQuestion();
+  });
+  document.getElementById('btn-next').addEventListener('click', nextQuestion);
+  document.getElementById('btn-back').addEventListener('click', prevQuestion);
+});
 </script>
 </body>
 </html>
